@@ -61,11 +61,16 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
+<<<<<<< HEAD
         'rest_framework.permissions.IsAuthenticated'
+=======
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+>>>>>>> 31bb2edc9ca83f6d7bb65a286ec60eededd692c1
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-      'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  
-    ]
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+		'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ],
 }
 
 OAUTH2_PROVIDER = {
