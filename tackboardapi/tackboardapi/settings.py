@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oauth2_provider',
     'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -60,11 +61,15 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
       'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  
     ]
+}
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {'reads': 'Read Scope', 'write': 'Write Scope', 'groups': 'Access your groups'}
 }
 
 ROOT_URLCONF = 'tackboardapi.urls'

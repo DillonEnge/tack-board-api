@@ -14,13 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.urls import path, include
+from django.contrib.auth.models import User, Group
 from django.contrib import admin
-from django.conf.urls import url, include
-from django.urls import path
-from django.contrib.auth.models import User
-from django.conf import settings
-import oauth2_provider.views as oauth2_views
-from rest_framework import routers, serializers, viewsets
+
+admin.autodiscover()
+
+from rest_framework import generics, permissions, serializers
+
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -28,44 +30,34 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'is_staff']
 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ["name", ]
+
 # ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
+class UserList(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+class UserDetails(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-# oauth2_provider endpoints
-oauth2_endpoint_views = [
-    path('authorize/', oauth2_views.AuthorizationView.as_view(), name="authorize"),
-    path('token/', oauth2_views.TokenView.as_view(), name="token"),
-    path('revoke-token/', oauth2_views.RevokeTokenView.as_view(), name="revoke-token"),
-]
-
-if settings.DEBUG:
-    # OAuth2 Application Management endpoints
-    oauth2_endpoint_views += [
-        path('applications/', oauth2_views.ApplicationList.as_view(), name="list"),
-        path('applications/register/', oauth2_views.ApplicationRegistration.as_view(), name="register"),
-        path('applications/<pk>/', oauth2_views.ApplicationDetail.as_view(), name="detail"),
-        path('applications/<pk>/delete/', oauth2_views.ApplicationDelete.as_view(), name="delete"),
-        path('applications/<pk>/update/', oauth2_views.ApplicationUpdate.as_view(), name="update"),
-    ]
-
-    # OAuth2 Token Management endpoints
-    oauth2_endpoint_views += [
-        path('authorized-tokens/', oauth2_views.AuthorizedTokensListView.as_view(), name="authorized-token-list"),
-        path('authorized-tokens/<pk>/delete/', oauth2_views.AuthorizedTokenDeleteView.as_view(),
-            name="authorized-token-delete"),
-    ]
+class GroupList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated, TokenHasScope]
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^example/', include('example.urls')),
-    url(r'^admin/', admin.site.urls),
-    path(r'authorize/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('admin/', admin.site.urls),
+    path('oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('users/', UserList.as_view()),
+    path('users/<pk>/', UserDetails.as_view()),
+    path('groups/', GroupList.as_view()),
+    path('example/', include('example.urls'))
 ]
