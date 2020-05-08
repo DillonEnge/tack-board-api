@@ -61,11 +61,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-<<<<<<< HEAD
         'rest_framework.permissions.IsAuthenticated'
-=======
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
->>>>>>> 31bb2edc9ca83f6d7bb65a286ec60eededd692c1
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -74,7 +70,11 @@ REST_FRAMEWORK = {
 }
 
 OAUTH2_PROVIDER = {
-    'SCOPES': {'reads': 'Read Scope', 'write': 'Write Scope', 'groups': 'Access your groups'}
+    'SCOPES': {
+        'reads': 'Read Scope', 
+        'write': 'Write Scope', 
+        'groups': 'Access your groups'
+    }
 }
 
 ROOT_URLCONF = 'tackboardapi.urls'
