@@ -27,7 +27,7 @@ tags = sqlalchemy.Table(
     'tags',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
-    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False, unique=True),
     sqlalchemy.Column('created_at', sqlalchemy.DateTime),
     sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
@@ -41,8 +41,8 @@ event_tags = sqlalchemy.Table(
     sqlalchemy.Column('tag_id', UUID(as_uuid=True), ForeignKey('tags.id'))
 )
 
-users = sqlalchemy.Table(
-    'users',
+profiles = sqlalchemy.Table(
+    'profiles',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False),
@@ -54,12 +54,34 @@ users = sqlalchemy.Table(
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
-user_tags = sqlalchemy.Table(
-    'user_tags',
+profile_tags = sqlalchemy.Table(
+    'profile_tags',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
-    sqlalchemy.Column('user_id', UUID(as_uuid=True), ForeignKey('users.id')),
+    sqlalchemy.Column('profile_id', UUID(as_uuid=True), ForeignKey('profiles.id')),
     sqlalchemy.Column('tag_id', UUID(as_uuid=True), ForeignKey('tags.id'))
+)
+
+users = sqlalchemy.Table(
+    'users',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('username', sqlalchemy.String(length=100), nullable=False, unique=True),
+    sqlalchemy.Column('password', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+
+refresh_tokens = sqlalchemy.Table(
+    'refresh_tokens',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False, unique=True),
+    sqlalchemy.Column('token', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
 def setup_tables():

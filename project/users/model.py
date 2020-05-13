@@ -8,10 +8,8 @@ async def get_user(user_id: str):
     query = ("""
         SELECT
             users.id AS id,
-            users.name AS name,
-            users.icon_url AS icon_url,
-            users.email AS email,
-            users.phone_number AS phone_number
+            users.username AS username,
+            users.password AS password
         FROM
             users
         WHERE
@@ -23,6 +21,24 @@ async def get_user(user_id: str):
     }
     return await db.fetch_one(query, values)
 
+async def get_user_by_name(username: str):
+    db = main.get_db()
+    query = ("""
+        SELECT
+            users.id AS id,
+            users.username AS username,
+            users.password AS password
+        FROM
+            users
+        WHERE
+            users.username = :username
+            AND users.deleted_at IS NULL;
+    """)
+    values = {
+        'username': username
+    }
+    return await db.fetch_one(query, values)
+
 async def get_users():
     db = main.get_db()
     query = ("""
@@ -30,32 +46,26 @@ async def get_users():
     """)
     return await db.fetch_all(query)
 
-async def create_user(name: str, icon_url: str, email: str, phone_number: str):
+async def create_user(username: str, password: str):
     db = main.get_db()
     query = ("""
         INSERT INTO users (
             id,
-            name,
-            icon_url,
-            email,
-            phone_number,
+            username,
+            password,
             created_at
         )
         VALUES (
             uuid_generate_v4(),
-            :name,
-            :icon_url,
-            :email,
-            :phone_number,
+            :username,
+            :password,
             clock_timestamp()
         )
         RETURNING users.id;
     """)
     values = {
-        'name': name,
-        'icon_url': icon_url,
-        'email': email,
-        'phone_number': phone_number
+        'username': username,
+        'password': password
     }
     return await db.execute(query, values)
 
@@ -63,17 +73,15 @@ async def update_user(user_id: str, name: str, icon_url: str, email: str, phone_
     db = main.get_db()
     query = ("""
         UPDATE users
-            SET name = :name,
-                icon_url = :icon_url,
-                email = :email,
-                phone_number = :phone_number,
+            SET username = :username,
+                password = :password,
                 updated_at = clock_timestamp()
         WHERE
             users.id = :user_id
             AND users.deleted_at IS NULL
         RETURNING
-            users.id AS event_id,
-            users.name AS event_name;
+            users.id AS user_id,
+            users.name AS user_name;
     """)
     values = {
         'name': name,

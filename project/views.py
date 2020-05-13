@@ -3,6 +3,7 @@ from sanic.request import Request
 from sanic.response import json
 from project.events.schema import Events
 from project.tags.schema import Tags
+from project.profiles.schema import Profiles
 from project.users.schema import Users
 from datetime import datetime
 
@@ -11,7 +12,7 @@ def validate_request(request: Request):
     headers = [
         'Authorization'
     ]
-    print(request.headers)
+
     for header in headers:
         if not request.headers[header]:
             return False
@@ -28,7 +29,6 @@ class EventsView(HTTPMethodView):
     async def post(self, request: Request):
         validated = validate_request(request)
 
-        print(request.json)
         name = request.json.get('name')
         description = request.json.get('description')
         time = request.json.get('time')
@@ -69,7 +69,6 @@ class TagsView(HTTPMethodView):
     async def post(self, request: Request):
         validated = validate_request(request)
 
-        print(request.json)
         name = request.json.get('name')
         tag_id = await Tags().create_tag(name)
         return tag_id
@@ -90,6 +89,46 @@ class TagsView(HTTPMethodView):
         return deleted_tag_id
 
 
+class ProfilesView(HTTPMethodView):
+    async def get(self, request: Request):
+        profile_id = request.json.get('profile_id')
+
+        if not profile_id:
+            profiles = await Profiles().get_profiles()
+            return profiles
+
+        profile = await Profiles().get_profile(profile_id)
+        return profile
+
+    async def post(self, request: Request):
+        validated = validate_request(request)
+
+        name = request.json.get('name')
+        icon_url = request.json.get('icon_url')
+        email = request.json.get('email')
+        phone_number = request.json.get('phone_number')
+        profile_id = await Profiles().create_profile(name, icon_url, email, phone_number)
+        return profile_id
+
+    async def patch(self, request: Request):
+        validated = validate_request(request)
+
+        profile_id = request.json.get('profile_id')
+        name = request.json.get('name')
+        icon_url = request.json.get('icon_url')
+        email = request.json.get('email')
+        phone_number = request.json.get('phone_number')
+
+        profile = await Profiles().update_profile(profile_id , name, icon_url, email, phone_number)
+        return profile
+
+    async def delete(self, request: Request):
+        validated = validate_request(request)
+
+        profile_id = request.json.get('profile_id')
+        deleted_profile_id = await Profiles().delete_profile(profile_id)
+        return deleted_profile_id
+
 class UsersView(HTTPMethodView):
     async def get(self, request: Request):
         user_id = request.json.get('user_id')
@@ -104,24 +143,18 @@ class UsersView(HTTPMethodView):
     async def post(self, request: Request):
         validated = validate_request(request)
 
-        print(request.json)
-        name = request.json.get('name')
-        icon_url = request.json.get('icon_url')
-        email = request.json.get('email')
-        phone_number = request.json.get('phone_number')
-        user_id = await Users().create_user(name, icon_url, email, phone_number)
+        username = request.json.get('username')
+        password = request.json.get('password')
+        user_id = await Users().create_user(username, password)
         return user_id
 
     async def patch(self, request: Request):
         validated = validate_request(request)
 
         user_id = request.json.get('user_id')
-        name = request.json.get('name')
-        icon_url = request.json.get('icon_url')
-        email = request.json.get('email')
-        phone_number = request.json.get('phone_number')
-
-        user = await Users().update_user(user_id , name, icon_url, email, phone_number)
+        username = request.json.get('username')
+        password = request.json.get('password')
+        user = await Users().update_user(user_id , username, password)
         return user
 
     async def delete(self, request: Request):

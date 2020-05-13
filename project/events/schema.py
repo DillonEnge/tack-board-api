@@ -1,5 +1,6 @@
 from project.events.model import get_event, create_event, update_event, delete_event, get_event_tags, add_event_tags, clear_event_tags
 from sanic.response import json
+from sanic.exceptions import ServerError
 from datetime import datetime
 from typing import List
 
@@ -11,7 +12,7 @@ class Events:
         event_tags = await get_event_tags(event_id)
 
         if not event:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'event': {
@@ -29,7 +30,7 @@ class Events:
         await add_event_tags(event_id, tags)
 
         if not event_id:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'event_id': str(event_id)
@@ -44,7 +45,7 @@ class Events:
         event_tags = await get_event_tags(event_id)
 
         if not event_id:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'event_id': str(event_id),
@@ -57,7 +58,7 @@ class Events:
         deleted_event_id = await delete_event(event_id)
 
         if not deleted_event_id:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'event_id': str(deleted_event_id)

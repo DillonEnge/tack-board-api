@@ -1,4 +1,5 @@
 from sanic import Sanic
+from sanic_jwt import Initialize
 
 from databases import Database
 
@@ -7,9 +8,20 @@ from project.routes import setup_routes
 from project.settings import Settings
 from project.middlewares import setup_middlewares
 from project.tables import setup_tables
+from project.authentication import (authenticate,
+                                    store_refresh_token,
+                                    retrieve_refresh_token,
+                                    retrieve_user)
 
 app = Sanic(__name__)
-
+Initialize(
+    app,
+    authenticate=authenticate,
+    refresh_token_enabled=True,
+    store_refresh_token=store_refresh_token,
+    retrieve_refresh_token=retrieve_refresh_token,
+    retrieve_user=retrieve_user
+)
 
 def setup_database():
     app.db = Database(app.config.DB_URL)
@@ -24,7 +36,6 @@ def setup_database():
 
 def get_db() -> Database:
     return app.db
-
 
 def init():
     env = Env()

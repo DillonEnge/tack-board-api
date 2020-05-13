@@ -6,5 +6,6 @@ def setup_routes(app):
     def init_routes(app, loop):
         app.add_route(views.EventsView.as_view(), '/events')
         app.add_route(views.TagsView.as_view(), '/tags')
+        app.add_route(views.ProfilesView.as_view(), '/profiles')
         app.add_route(views.UsersView.as_view(), '/users')
 

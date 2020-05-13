@@ -1,5 +1,6 @@
 from project.tags.model import get_tag, get_tags, create_tag, update_tag, delete_tag
 from sanic.response import json
+from sanic.exceptions import ServerError
 from datetime import datetime
 from typing import List
 
@@ -9,7 +10,7 @@ class Tags:
         tag = await get_tag(tag_id)
 
         if not tag:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'tag': {
@@ -35,7 +36,7 @@ class Tags:
         tag_id = await create_tag(name)
 
         if not tag_id:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'tag_id': str(tag_id)
@@ -46,7 +47,7 @@ class Tags:
         tag_id = await update_tag(tag_id, name)
 
         if not tag_id:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'tag_id': str(tag_id)
@@ -57,7 +58,7 @@ class Tags:
         deleted_tag_id = await delete_tag(tag_id)
 
         if not deleted_tag_id:
-            raise Exception('u dun messd up bruther')
+            raise ServerError('u dun messd up bruther', status_code=500)
 
         return json({
             'tag_id': str(deleted_tag_id)
