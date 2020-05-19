@@ -7,15 +7,15 @@ async def get_event(event_id: str):
     db = main.get_db()
     query = ("""
         SELECT
-            events.id AS id,
-            events.name AS name,
-            events.description AS description,
-            events.time AS time
+            id,
+            name,
+            description,
+            time
         FROM
             events
         WHERE
-            events.id = :event_id
-            AND events.deleted_at IS NULL;
+            id = :event_id
+            AND deleted_at IS NULL;
     """)
     values = {
         'event_id': event_id
@@ -57,13 +57,13 @@ async def update_event(event_id: str, name: str, description: str, time: str):
                 time = :time,
                 updated_at = clock_timestamp()
         WHERE
-            events.id = :event_id
-            AND events.deleted_at IS NULL
+            id = :event_id
+            AND deleted_at IS NULL
         RETURNING
-            events.id AS event_id,
-            events.name AS event_name,
-            events.description AS event_description,
-            events.time AS event_time;
+            id AS event_id,
+            name AS event_name,
+            description AS event_description,
+            time AS event_time;
     """)
     values = {
         'name': name,
@@ -79,8 +79,8 @@ async def delete_event(event_id: str):
         UPDATE events
             SET deleted_at = clock_timestamp()
         WHERE 
-            events.id = :event_id
-        RETURNING events.id;
+            id = :event_id
+        RETURNING id;
     """)
     values = {
         'event_id': event_id
@@ -97,7 +97,7 @@ async def get_event_tags(event_id: str):
             event_tags,
             tags
         WHERE
-            event_id = :event_id
+            event_tags.event_id = :event_id
             AND event_tags.tag_id = tags.id;
     """)
     values = {
@@ -114,11 +114,11 @@ async def add_event_tags(event_id: str, tags: List[str]):
                 uuid_generate_v4(),
                 (SELECT id from events
                     WHERE id = :event_id AND deleted_at IS NULL),
-                tags.id
+                id
             FROM
                 tags
             WHERE
-                tags.id = ANY(:tags);
+                id = ANY(:tags);
         """)
         values = {
             "event_id": event_id,

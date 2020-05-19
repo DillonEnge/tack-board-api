@@ -141,8 +141,6 @@ class UsersView(HTTPMethodView):
         return user
 
     async def post(self, request: Request):
-        validated = validate_request(request)
-
         username = request.json.get('username')
         password = request.json.get('password')
         user_id = await Users().create_user(username, password)

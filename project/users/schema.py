@@ -1,6 +1,7 @@
 from project.users.model import get_user, get_user_by_name, get_users, create_user, update_user, delete_user
 from sanic.response import json
 from sanic.exceptions import ServerError
+from project.email.utils import Email
 from datetime import datetime
 from typing import List
 
@@ -58,6 +59,14 @@ class Users:
 
         if not user_id:
             raise ServerError('u dun messd up bruther', status_code=500)
+
+        Email().send_message(
+            {
+                'recipient': 'connor.enge@gmail.com',
+                'subject': 'TEST FOR TBA'
+            },
+            'This is a test message for the TBA email server.'
+        )
 
         return json({
             'user_id': str(user_id)

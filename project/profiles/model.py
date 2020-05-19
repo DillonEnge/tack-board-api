@@ -7,16 +7,16 @@ async def get_profile(profile_id: str):
     db = main.get_db()
     query = ("""
         SELECT
-            profiles.id AS id,
-            profiles.name AS name,
-            profiles.icon_url AS icon_url,
-            profiles.email AS email,
-            profiles.phone_number AS phone_number
+            id,
+            name,
+            icon_url,
+            email,
+            phone_number
         FROM
             profiles
         WHERE
-            profiles.id = :profile_id
-            AND profiles.deleted_at IS NULL;
+            id = :profile_id
+            AND deleted_at IS NULL;
     """)
     values = {
         'profile_id': profile_id
@@ -26,7 +26,7 @@ async def get_profile(profile_id: str):
 async def get_profiles():
     db = main.get_db()
     query = ("""
-        SELECT * FROM profiles WHERE profiles.deleted_at IS NULL;
+        SELECT * FROM profiles WHERE deleted_at IS NULL;
     """)
     return await db.fetch_all(query)
 
@@ -69,11 +69,11 @@ async def update_profile(profile_id: str, name: str, icon_url: str, email: str, 
                 phone_number = :phone_number,
                 updated_at = clock_timestamp()
         WHERE
-            profiles.id = :profile_id
-            AND profiles.deleted_at IS NULL
+            id = :profile_id
+            AND deleted_at IS NULL
         RETURNING
-            profiles.id AS profile_id,
-            profiles.name AS profile_name;
+            id AS profile_id,
+            name AS profile_name;
     """)
     values = {
         'name': name,
@@ -90,8 +90,8 @@ async def delete_profile(profile_id: str):
         UPDATE profiles
             SET deleted_at = clock_timestamp()
         WHERE 
-            profiles.id = :profile_id
-        RETURNING profiles.id;
+            id = :profile_id
+        RETURNING id;
     """)
     values = {
         'profile_id': profile_id

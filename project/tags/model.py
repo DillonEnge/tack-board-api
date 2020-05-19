@@ -7,13 +7,13 @@ async def get_tag(tag_id: str):
     db = main.get_db()
     query = ("""
         SELECT
-            tags.id AS id,
-            tags.name AS name
+            id,
+            name
         FROM
             tags
         WHERE
-            tags.id = :tag_id
-            AND tags.deleted_at IS NULL;
+            id = :tag_id
+            AND deleted_at IS NULL;
     """)
     values = {
         'tag_id': tag_id
@@ -23,7 +23,7 @@ async def get_tag(tag_id: str):
 async def get_tags():
     db = main.get_db()
     query = ("""
-        SELECT * FROM tags WHERE tags.deleted_at IS NULL;
+        SELECT * FROM tags WHERE deleted_at IS NULL;
     """)
     return await db.fetch_all(query)
 
@@ -54,11 +54,11 @@ async def update_tag(tag_id: str, name: str):
             SET name = :name,
                 updated_at = clock_timestamp()
         WHERE
-            tags.id = :tag_id
-            AND tags.deleted_at IS NULL
+            id = :tag_id
+            AND deleted_at IS NULL
         RETURNING
-            tags.id AS event_id,
-            tags.name AS event_name;
+            id AS event_id,
+            name AS event_name;
     """)
     values = {
         'name': name,
@@ -72,7 +72,7 @@ async def delete_tag(tag_id: str):
         UPDATE tags
             SET deleted_at = clock_timestamp()
         WHERE 
-            tags.id = :tag_id
+            id = :tag_id
         RETURNING tags.id;
     """)
     values = {

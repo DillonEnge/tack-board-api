@@ -3,6 +3,7 @@ from sanic.exceptions import ServerError
 from sanic.response import json
 from datetime import datetime
 from typing import List
+from project.email.utils import Email
 
 class Profiles:
     @staticmethod
@@ -42,7 +43,7 @@ class Profiles:
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
-
+        
         return json({
             'profile_id': str(profile_id)
         })

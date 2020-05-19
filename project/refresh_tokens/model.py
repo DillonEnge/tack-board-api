@@ -4,13 +4,13 @@ async def get_refresh_token(name: str):
     db = main.get_db()
     query = ("""
         SELECT
-            refresh_tokens.id as id,
-            refresh_tokens.name as name,
-            refresh_tokens.token as token
+            id,
+            name,
+            token
         FROM
             refresh_tokens
         WHERE
-            refresh_tokens.name = :name;
+            name = :name;
     """)
     values = {
         'name': name
@@ -48,10 +48,10 @@ async def update_refresh_token(token_id: str, name: str, token: str):
                 token = :token,
                 updated_at = clock_timestamp()
         WHERE
-            refresh_tokens.id = :token_id
-            AND refresh_tokens.deleted_at IS NULL
+            id = :token_id
+            AND deleted_at IS NULL
         RETURNING
-            refresh_tokens.id AS token_id;
+            id AS token_id;
     """)
     values = {
         'token_id': token_id,

@@ -7,14 +7,14 @@ async def get_user(user_id: str):
     db = main.get_db()
     query = ("""
         SELECT
-            users.id AS id,
-            users.username AS username,
-            users.password AS password
+            id,
+            username,
+            password
         FROM
             users
         WHERE
-            users.id = :user_id
-            AND users.deleted_at IS NULL;
+            id = :user_id
+            AND deleted_at IS NULL;
     """)
     values = {
         'user_id': user_id
@@ -25,14 +25,14 @@ async def get_user_by_name(username: str):
     db = main.get_db()
     query = ("""
         SELECT
-            users.id AS id,
-            users.username AS username,
-            users.password AS password
+            id,
+            username,
+            password
         FROM
             users
         WHERE
-            users.username = :username
-            AND users.deleted_at IS NULL;
+            username = :username
+            AND deleted_at IS NULL;
     """)
     values = {
         'username': username
@@ -42,7 +42,7 @@ async def get_user_by_name(username: str):
 async def get_users():
     db = main.get_db()
     query = ("""
-        SELECT * FROM users WHERE users.deleted_at IS NULL;
+        SELECT * FROM users WHERE deleted_at IS NULL;
     """)
     return await db.fetch_all(query)
 
@@ -77,8 +77,8 @@ async def update_user(user_id: str, name: str, icon_url: str, email: str, phone_
                 password = :password,
                 updated_at = clock_timestamp()
         WHERE
-            users.id = :user_id
-            AND users.deleted_at IS NULL
+            id = :user_id
+            AND deleted_at IS NULL
         RETURNING
             users.id AS user_id,
             users.name AS user_name;
@@ -98,7 +98,7 @@ async def delete_user(user_id: str):
         UPDATE users
             SET deleted_at = clock_timestamp()
         WHERE 
-            users.id = :user_id
+            id = :user_id
         RETURNING users.id;
     """)
     values = {

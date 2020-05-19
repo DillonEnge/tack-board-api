@@ -64,8 +64,8 @@ class Events:
             'event_id': str(deleted_event_id)
         })
 
-async def build_tag(tag):
+def build_tag(tag):
     return {
-        "tag_id": tag['id'],
-        "tag_name": tag['name']
+        "tag_id": str(tag['id']),
+        "tag_name": str(tag['name'])
     }
