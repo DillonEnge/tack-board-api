@@ -1,5 +1,5 @@
 from sanic_jwt import exceptions
-from project.users.schema import Users
+from project.users.schema import User
 from project.refresh_tokens.schema import RefreshTokens
 
 async def authenticate(request, *args, **kwargs):
@@ -9,7 +9,7 @@ async def authenticate(request, *args, **kwargs):
     if not username or not password:
         raise exceptions.AuthenticationFailed("Missing username or password.")
 
-    user = await Users().get_user_by_name(username)
+    user = await User().get_user_by_name(username)
 
     if password != user.get('password'):
         raise exceptions.AuthenticationFailed()
@@ -32,7 +32,7 @@ async def retrieve_refresh_token(request, user_id, *args, **kwargs):
 async def retrieve_user(request, payload, *args, **kwargs):
     if payload:
         user_id = payload.get('user_id', None)
-        user = await Users().get_user(user_id, retrieving_user=True)
+        user = await User().get_user(user_id, retrieving_user=True)
         print(f'user:{user}')
         return user
     else:

@@ -4,7 +4,7 @@ from sanic.response import json
 from project.events.schema import Events
 from project.tags.schema import Tags
 from project.profiles.schema import Profiles
-from project.users.schema import Users
+from project.users.schema import User
 from datetime import datetime
 
 
@@ -134,16 +134,17 @@ class UsersView(HTTPMethodView):
         user_id = request.json.get('user_id')
 
         if not user_id:
-            users = await Users().get_users()
-            return users
+            user = await User().get_users()
+            return user
 
-        user = await Users().get_user(user_id)
+        user = await User().get_user(user_id)
         return user
 
     async def post(self, request: Request):
         username = request.json.get('username')
         password = request.json.get('password')
-        user_id = await Users().create_user(username, password)
+        email = request.json.get('email')
+        user_id = await User().create_user(username, password, email)
         return user_id
 
     async def patch(self, request: Request):
@@ -152,12 +153,13 @@ class UsersView(HTTPMethodView):
         user_id = request.json.get('user_id')
         username = request.json.get('username')
         password = request.json.get('password')
-        user = await Users().update_user(user_id , username, password)
+        email = request.json.get('email')
+        user = await User().update_user(user_id , username, password, email)
         return user
 
     async def delete(self, request: Request):
         validated = validate_request(request)
 
         user_id = request.json.get('user_id')
-        deleted_user_id = await Users().delete_user(user_id)
+        deleted_user_id = await User().delete_user(user_id)
         return deleted_user_id

@@ -62,12 +62,13 @@ profile_tags = sqlalchemy.Table(
     sqlalchemy.Column('tag_id', UUID(as_uuid=True), ForeignKey('tags.id'))
 )
 
-users = sqlalchemy.Table(
-    'users',
+user = sqlalchemy.Table(
+    'user',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('username', sqlalchemy.String(length=100), nullable=False, unique=True),
     sqlalchemy.Column('password', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('email', sqlalchemy.String(length=100), nullable=False),
     sqlalchemy.Column('created_at', sqlalchemy.DateTime),
     sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)

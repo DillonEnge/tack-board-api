@@ -1,5 +1,5 @@
 from project import main
-from project.tables import users
+from project.tables import user
 from datetime import datetime
 from typing import List
 
@@ -9,9 +9,10 @@ async def get_user(user_id: str):
         SELECT
             id,
             username,
-            password
+            password,
+            email
         FROM
-            users
+            "user"
         WHERE
             id = :user_id
             AND deleted_at IS NULL;
@@ -27,9 +28,10 @@ async def get_user_by_name(username: str):
         SELECT
             id,
             username,
-            password
+            password,
+            email
         FROM
-            users
+            "user"
         WHERE
             username = :username
             AND deleted_at IS NULL;
@@ -42,52 +44,55 @@ async def get_user_by_name(username: str):
 async def get_users():
     db = main.get_db()
     query = ("""
-        SELECT * FROM users WHERE deleted_at IS NULL;
+        SELECT * FROM "user" WHERE deleted_at IS NULL;
     """)
     return await db.fetch_all(query)
 
-async def create_user(username: str, password: str):
+async def create_user(username: str, password: str, email: str):
     db = main.get_db()
     query = ("""
-        INSERT INTO users (
+        INSERT INTO "user" (
             id,
             username,
             password,
+            email,
             created_at
         )
         VALUES (
             uuid_generate_v4(),
             :username,
             :password,
+            :email,
             clock_timestamp()
         )
-        RETURNING users.id;
+        RETURNING id;
     """)
     values = {
         'username': username,
-        'password': password
+        'password': password,
+        'email': email
     }
     return await db.execute(query, values)
 
-async def update_user(user_id: str, name: str, icon_url: str, email: str, phone_number: str):
+async def update_user(user_id: str, username: str, password: str, email: str):
     db = main.get_db()
     query = ("""
-        UPDATE users
+        UPDATE "user"
             SET username = :username,
                 password = :password,
+                email = :email,
                 updated_at = clock_timestamp()
         WHERE
             id = :user_id
             AND deleted_at IS NULL
         RETURNING
-            users.id AS user_id,
-            users.name AS user_name;
+            id AS user_id,
+            username AS user_name;
     """)
     values = {
-        'name': name,
-        'icon_url': icon_url,
+        'username': name,
+        'password': password,
         'email': email,
-        'phone_number': phone_number,
         'user_id': user_id
     }
     return await db.execute(query, values)
@@ -95,11 +100,11 @@ async def update_user(user_id: str, name: str, icon_url: str, email: str, phone_
 async def delete_user(user_id: str):
     db = main.get_db()
     query = ("""
-        UPDATE users
+        UPDATE "user"
             SET deleted_at = clock_timestamp()
         WHERE 
             id = :user_id
-        RETURNING users.id;
+        RETURNING id;
     """)
     values = {
         'user_id': user_id

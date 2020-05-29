@@ -5,7 +5,7 @@ from project.email.utils import Email
 from datetime import datetime
 from typing import List
 
-class Users:
+class User:
     @staticmethod
     async def get_user(user_id: str, retrieving_user=False):
         user = await get_user(user_id)
@@ -17,14 +17,16 @@ class Users:
             return {
                 'user_id': str(user['id']),
                 'username': str(user['username']),
-                'password': str(user['password'])
+                'password': str(user['password']),
+                'email': str(user['email'])
             }
 
         return json({
             'user': {
                 'id': str(user['id']),
                 'username': str(user['username']),
-                'password': str(user['password'])
+                'password': str(user['password']),
+                'email': str(user['email'])
             }
         })
 
@@ -38,7 +40,8 @@ class Users:
         return {
             'user_id': str(user['id']), # Important key for use with sanic_jwt
             'username': str(user['username']),
-            'password': str(user['password'])
+            'password': str(user['password']),
+            'email': str(user['email'])
         }
 
     @staticmethod
@@ -49,13 +52,14 @@ class Users:
             'users': [{
                 'id': str(user['id']),
                 'username': str(user['username']),
-                'password': str(user['password'])
+                'password': str(user['password']),
+                'email': str(user['email'])
             } for user in users]
         })
 
     @staticmethod
-    async def create_user(username: str, password: str):
-        user_id = await create_user(username, password)
+    async def create_user(username: str, password: str, email: str):
+        user_id = await create_user(username, password, email)
 
         if not user_id:
             raise ServerError('u dun messd up bruther', status_code=500)
@@ -73,8 +77,8 @@ class Users:
         })
 
     @staticmethod
-    async def update_user(user_id: str, username: str, password: str):
-        user_id = await update_user(user_id, username, password)
+    async def update_user(user_id: str, username: str, password: str, email: str):
+        user_id = await update_user(user_id, username, password, email)
 
         if not user_id:
             raise ServerError('u dun messd up bruther', status_code=500)
