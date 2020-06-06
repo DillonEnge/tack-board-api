@@ -1,10 +1,10 @@
-from project.tags.model import get_tag, get_tags, create_tag, update_tag, delete_tag
+from project.tag.model import get_tag, get_tags, create_tag, update_tag, delete_tag
 from sanic.response import json
 from sanic.exceptions import ServerError
 from datetime import datetime
 from typing import List
 
-class Tags:
+class Tag:
     @staticmethod
     async def get_tag(tag_id: str):
         tag = await get_tag(tag_id)

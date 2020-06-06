@@ -1,5 +1,5 @@
 from project import main
-from project.tables import events
+from project.tables import event
 from datetime import datetime
 from typing import List
 
@@ -10,9 +10,10 @@ async def get_event(event_id: str):
             id,
             name,
             description,
+            location,
             time
         FROM
-            events
+            event
         WHERE
             id = :event_id
             AND deleted_at IS NULL;
@@ -22,13 +23,14 @@ async def get_event(event_id: str):
     }
     return await db.fetch_one(query, values)
 
-async def create_event(name: str, description: str, time: str):
+async def create_event(name: str, description: str, location: str, time: str):
     db = main.get_db()
     query = ("""
-        INSERT INTO events (
+        INSERT INTO event (
             id,
             name,
             description,
+            location,
             time,
             created_at
         )
@@ -36,24 +38,27 @@ async def create_event(name: str, description: str, time: str):
             uuid_generate_v4(),
             :name,
             :description,
+            :location,
             :time,
             clock_timestamp()
         )
-        RETURNING events.id;
+        RETURNING event.id;
     """)
     values = {
         'name': name,
         'description': description,
+        'location': location,
         'time': time
     }
     return await db.execute(query, values)
 
-async def update_event(event_id: str, name: str, description: str, time: str):
+async def update_event(event_id: str, name: str, description: str, location: str, time: str):
     db = main.get_db()
     query = ("""
-        UPDATE events
+        UPDATE event
             SET name = :name,
                 description = :description,
+                location = :location
                 time = :time,
                 updated_at = clock_timestamp()
         WHERE
@@ -68,6 +73,7 @@ async def update_event(event_id: str, name: str, description: str, time: str):
     values = {
         'name': name,
         'description': description,
+        'location': location,
         'time': time,
         'event_id': event_id,
     }
@@ -76,7 +82,7 @@ async def update_event(event_id: str, name: str, description: str, time: str):
 async def delete_event(event_id: str):
     db = main.get_db()
     query = ("""
-        UPDATE events
+        UPDATE event
             SET deleted_at = clock_timestamp()
         WHERE 
             id = :event_id
@@ -91,14 +97,14 @@ async def get_event_tags(event_id: str):
     db = main.get_db()
     query = ("""
         SELECT
-            tags.id,
-            tags.name
+            tag.id,
+            tag.name
         FROM
-            event_tags,
-            tags
+            event_tag,
+            tag
         WHERE
-            event_tags.event_id = :event_id
-            AND event_tags.tag_id = tags.id;
+            event_tag.event_id = :event_id
+            AND event_tag.tag_id = tag.id;
     """)
     values = {
         'event_id': event_id
@@ -109,14 +115,14 @@ async def add_event_tags(event_id: str, tags: List[str]):
     db = main.get_db()
     if len(tags) > 0:
         query = ("""
-            INSERT INTO event_tags (id, event_id, tag_id)
+            INSERT INTO event_tag (id, event_id, tag_id)
             SELECT
                 uuid_generate_v4(),
-                (SELECT id from events
+                (SELECT id from event
                     WHERE id = :event_id AND deleted_at IS NULL),
                 id
             FROM
-                tags
+                tag
             WHERE
                 id = ANY(:tags);
         """)
@@ -130,7 +136,7 @@ async def clear_event_tags(event_id: str):
     db = main.get_db()
     query = ("""
         DELETE FROM
-            event_tags
+            event_tag
         WHERE
             event_id = :event_id;
     """)

@@ -8,4 +8,4 @@ def setup_routes(app):
         app.add_route(views.TagsView.as_view(), '/tags')
         app.add_route(views.ProfilesView.as_view(), '/profiles')
         app.add_route(views.UsersView.as_view(), '/users')
-
+        app.add_route(views.PollsView.as_view(), '/polls')

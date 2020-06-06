@@ -1,6 +1,6 @@
 from sanic_jwt import exceptions
-from project.users.schema import User
-from project.refresh_tokens.schema import RefreshTokens
+from project.user.schema import User
+from project.refresh_token.schema import RefreshToken
 
 async def authenticate(request, *args, **kwargs):
     username = request.json.get("username", None)
@@ -18,15 +18,15 @@ async def authenticate(request, *args, **kwargs):
 
 async def store_refresh_token(user_id, refresh_token, *args, **kwargs):
     name = f'refresh_token_{user_id}'
-    token = await RefreshTokens().get_refresh_token(name)
+    token = await RefreshToken().get_refresh_token(name)
     if token:
-        await RefreshTokens().update_refresh_token(token['token_id'], name, refresh_token)
+        await RefreshToken().update_refresh_token(token['token_id'], name, refresh_token)
     else:
-        await RefreshTokens().create_refresh_token(name, refresh_token)
+        await RefreshToken().create_refresh_token(name, refresh_token)
 
 async def retrieve_refresh_token(request, user_id, *args, **kwargs):
     name = f'refresh_token_{user_id}'
-    token = await RefreshTokens().get_refresh_token(name)
+    token = await RefreshToken().get_refresh_token(name)
     return token['token']
 
 async def retrieve_user(request, payload, *args, **kwargs):

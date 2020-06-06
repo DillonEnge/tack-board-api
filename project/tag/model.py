@@ -1,5 +1,5 @@
 from project import main
-from project.tables import tags
+from project.tables import tag
 from datetime import datetime
 from typing import List
 
@@ -10,7 +10,7 @@ async def get_tag(tag_id: str):
             id,
             name
         FROM
-            tags
+            tag
         WHERE
             id = :tag_id
             AND deleted_at IS NULL;
@@ -23,14 +23,14 @@ async def get_tag(tag_id: str):
 async def get_tags():
     db = main.get_db()
     query = ("""
-        SELECT * FROM tags WHERE deleted_at IS NULL;
+        SELECT * FROM tag WHERE deleted_at IS NULL;
     """)
     return await db.fetch_all(query)
 
 async def create_tag(name: str):
     db = main.get_db()
     query = ("""
-        INSERT INTO tags (
+        INSERT INTO tag (
             id,
             name,
             created_at
@@ -40,7 +40,7 @@ async def create_tag(name: str):
             :name,
             clock_timestamp()
         )
-        RETURNING tags.id;
+        RETURNING tag.id;
     """)
     values = {
         'name': name
@@ -50,15 +50,15 @@ async def create_tag(name: str):
 async def update_tag(tag_id: str, name: str):
     db = main.get_db()
     query = ("""
-        UPDATE tags
+        UPDATE tag
             SET name = :name,
                 updated_at = clock_timestamp()
         WHERE
             id = :tag_id
             AND deleted_at IS NULL
         RETURNING
-            id AS event_id,
-            name AS event_name;
+            id AS tag_id,
+            name AS tag_name;
     """)
     values = {
         'name': name,
@@ -69,11 +69,11 @@ async def update_tag(tag_id: str, name: str):
 async def delete_tag(tag_id: str):
     db = main.get_db()
     query = ("""
-        UPDATE tags
+        UPDATE tag
             SET deleted_at = clock_timestamp()
         WHERE 
             id = :tag_id
-        RETURNING tags.id;
+        RETURNING tag.id;
     """)
     values = {
         'tag_id': tag_id
