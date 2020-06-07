@@ -1,10 +1,10 @@
-from project.events.model import get_event, create_event, update_event, delete_event, get_event_tags, add_event_tags, clear_event_tags
+from project.event.model import get_event, create_event, update_event, delete_event, get_event_tags, add_event_tags, clear_event_tags
 from sanic.response import json
 from sanic.exceptions import ServerError
 from datetime import datetime
 from typing import List
 
-class Events:
+class Event:
     @staticmethod
     async def get_event(event_id: str):
         event = await get_event(event_id)
@@ -19,14 +19,15 @@ class Events:
                 'id': str(event['id']),
                 'name': str(event['name']),
                 'description': str(event['description']),
+                'location': str(event['location']),
                 'time': str(event['time']),
                 'tags': [build_tag(tag) for tag in event_tags]
             }
         })
 
     @staticmethod
-    async def create_event(name: str, description: str, time: str, tags: List[str]):
-        event_id = await create_event(name, description, time)
+    async def create_event(name: str, description: str, location: str, time: str, tags: List[str]):
+        event_id = await create_event(name, description, location, time)
         await add_event_tags(event_id, tags)
 
         if not event_id:
@@ -37,11 +38,11 @@ class Events:
         })
 
     @staticmethod
-    async def update_event(event_id: str, name: str, description: str, time: str, tags: List[str]):
+    async def update_event(event_id: str, name: str, description: str, location: str, time: str, tags: List[str]):
         await clear_event_tags(event_id)
         await add_event_tags(event_id, tags)
 
-        event_id = await update_event(event_id, name, description, time)
+        event_id = await update_event(event_id, name, description, location, time)
         event_tags = await get_event_tags(event_id)
 
         if not event_id:

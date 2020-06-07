@@ -1,4 +1,4 @@
-from project.users.model import get_user, get_user_by_name, get_users, create_user, update_user, delete_user
+from project.user.model import get_user, get_user_by_name, get_users, create_user, update_user, delete_user
 from sanic.response import json
 from sanic.exceptions import ServerError
 from project.email.utils import Email

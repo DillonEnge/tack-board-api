@@ -1,11 +1,11 @@
-from project.profiles.model import get_profile, get_profiles, create_profile, update_profile, delete_profile
+from project.profile.model import get_profile, get_profiles, create_profile, update_profile, delete_profile
 from sanic.exceptions import ServerError
 from sanic.response import json
 from datetime import datetime
 from typing import List
 from project.email.utils import Email
 
-class Profiles:
+class Profile:
     @staticmethod
     async def get_profile(profile_id: str):
         profile = await get_profile(profile_id)
@@ -17,8 +17,8 @@ class Profiles:
             'profile': {
                 'id': str(profile['id']),
                 'name': str(profile['name']),
-                'icon_url': str(profile['icon_url']),
-                'email': str(profile['email']),
+                'profile_img': str(profile['profile_img']),
+                'description': str(profile['description']),
                 'phone_number': str(profile['phone_number'])
             }
         })
@@ -31,15 +31,15 @@ class Profiles:
             'profiles': [{
                 'id': str(profile['id']),
                 'name': str(profile['name']),
-                'icon_url': str(profile['icon_url']),
-                'email': str(profile['email']),
+                'profile_img': str(profile['profile_img']),
+                'description': str(profile['description']),
                 'phone_number': str(profile['phone_number'])
             } for profile in profiles]
         })
 
     @staticmethod
-    async def create_profile(name: str, icon_url: str, email: str, phone_number: str):
-        profile_id = await create_profile(name, icon_url, email, phone_number)
+    async def create_profile(name: str, profile_img: str, description: str, phone_number: str):
+        profile_id = await create_profile(name, profile_img, description, phone_number)
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
@@ -49,8 +49,8 @@ class Profiles:
         })
 
     @staticmethod
-    async def update_profile(profile_id: str, name: str, icon_url: str, email: str, phone_number: str):
-        profile_id = await update_profile(profile_id, name, icon_url, email, phone_number)
+    async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str):
+        profile_id = await update_profile(profile_id, name, profile_img, description, phone_number)
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)

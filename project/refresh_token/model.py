@@ -8,7 +8,7 @@ async def get_refresh_token(name: str):
             name,
             token
         FROM
-            refresh_tokens
+            refresh_token
         WHERE
             name = :name;
     """)
@@ -20,7 +20,7 @@ async def get_refresh_token(name: str):
 async def create_refresh_token(name: str, token: str):
     db = main.get_db()
     query = ("""
-        INSERT INTO refresh_tokens (
+        INSERT INTO refresh_token (
             id,
             name,
             token,
@@ -32,7 +32,7 @@ async def create_refresh_token(name: str, token: str):
             :token,
             clock_timestamp()
         )
-        RETURNING refresh_tokens.id;
+        RETURNING refresh_token.id;
     """)
     values = {
         'name': name,
@@ -43,7 +43,7 @@ async def create_refresh_token(name: str, token: str):
 async def update_refresh_token(token_id: str, name: str, token: str):
     db = main.get_db()
     query = ("""
-        UPDATE refresh_tokens
+        UPDATE refresh_token
             SET name = :name,
                 token = :token,
                 updated_at = clock_timestamp()

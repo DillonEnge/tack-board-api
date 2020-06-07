@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import create_engine, ForeignKey
+from sqlalchemy import create_engine, ForeignKey, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from project.settings import Settings
 from environs import Env
@@ -11,20 +11,24 @@ env.read_env()
 engine = create_engine(Settings.DB_URL)
 metadata.bind = engine
 
-events = sqlalchemy.Table(
-    'events',
+type_enum = ("checklist", "description")
+scope_enum = ("moderator_only", "all_members")
+
+event = sqlalchemy.Table(
+    'event',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False),
     sqlalchemy.Column('description', sqlalchemy.String(length=100)),
     sqlalchemy.Column('time', sqlalchemy.String(length=100)),
+    sqlalchemy.Column('location', sqlalchemy.String(length=100)),
     sqlalchemy.Column('created_at', sqlalchemy.DateTime),
     sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
-tags = sqlalchemy.Table(
-    'tags',
+tag = sqlalchemy.Table(
+    'tag',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False, unique=True),
@@ -33,33 +37,51 @@ tags = sqlalchemy.Table(
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
-event_tags = sqlalchemy.Table(
-    'event_tags',
+event_tag = sqlalchemy.Table(
+    'event_tag',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
-    sqlalchemy.Column('event_id', UUID(as_uuid=True), ForeignKey('events.id')),
-    sqlalchemy.Column('tag_id', UUID(as_uuid=True), ForeignKey('tags.id'))
+    sqlalchemy.Column('event_id', UUID(as_uuid=True), ForeignKey('event.id')),
+    sqlalchemy.Column('tag_id', UUID(as_uuid=True), ForeignKey('tag.id'))
 )
 
-profiles = sqlalchemy.Table(
-    'profiles',
+group = sqlalchemy.Table(
+    'group',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
-    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False),
-    sqlalchemy.Column('icon_url', sqlalchemy.String(length=100)),
-    sqlalchemy.Column('email', sqlalchemy.String(length=100), nullable=False),
-    sqlalchemy.Column('phone_number', sqlalchemy.String(length=100)),
+    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False, unique=True),
+    sqlalchemy.Column('description', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('group_img', sqlalchemy.String(length=100), nullable=False),
     sqlalchemy.Column('created_at', sqlalchemy.DateTime),
     sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
-profile_tags = sqlalchemy.Table(
-    'profile_tags',
+poll = sqlalchemy.Table(
+    'poll',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
-    sqlalchemy.Column('profile_id', UUID(as_uuid=True), ForeignKey('profiles.id')),
-    sqlalchemy.Column('tag_id', UUID(as_uuid=True), ForeignKey('tags.id'))
+    sqlalchemy.Column('question', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('event_id', UUID(as_uuid=True), ForeignKey('event.id')),
+    sqlalchemy.Column('type', Enum("checklist", "description", name="poll_type")),
+    sqlalchemy.Column('scope', Enum("moderator_only", "all_members", name="poll_scope")),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+
+profile = sqlalchemy.Table(
+    'profile',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False),
+    sqlalchemy.Column('profile_img', sqlalchemy.String(length=100)),
+    sqlalchemy.Column('phone_number', sqlalchemy.String(length=100)),
+    sqlalchemy.Column('description', sqlalchemy.String(length=100)),
+    sqlalchemy.Column('user_id', UUID(as_uuid=True), ForeignKey('user.id')),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
 user = sqlalchemy.Table(
@@ -74,8 +96,8 @@ user = sqlalchemy.Table(
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
-refresh_tokens = sqlalchemy.Table(
-    'refresh_tokens',
+refresh_token = sqlalchemy.Table(
+    'refresh_token',
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False, unique=True),
@@ -87,3 +109,12 @@ refresh_tokens = sqlalchemy.Table(
 
 def setup_tables():
     metadata.create_all()
+
+def get_metadata():
+    return metadata
+
+def get_type_enum():
+    return type_enum
+
+def get_scope_enum():
+    return scope_enum

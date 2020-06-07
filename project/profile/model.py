@@ -1,5 +1,5 @@
 from project import main
-from project.tables import profiles
+from project.tables import profile
 from datetime import datetime
 from typing import List
 
@@ -9,11 +9,11 @@ async def get_profile(profile_id: str):
         SELECT
             id,
             name,
-            icon_url,
-            email,
+            profile_img,
+            description,
             phone_number
         FROM
-            profiles
+            profile
         WHERE
             id = :profile_id
             AND deleted_at IS NULL;
@@ -26,46 +26,46 @@ async def get_profile(profile_id: str):
 async def get_profiles():
     db = main.get_db()
     query = ("""
-        SELECT * FROM profiles WHERE deleted_at IS NULL;
+        SELECT * FROM profile WHERE deleted_at IS NULL;
     """)
     return await db.fetch_all(query)
 
-async def create_profile(name: str, icon_url: str, email: str, phone_number: str):
+async def create_profile(name: str, profile_img: str, description: str, phone_number: str):
     db = main.get_db()
     query = ("""
-        INSERT INTO profiles (
+        INSERT INTO profile (
             id,
             name,
-            icon_url,
-            email,
+            profile_img,
+            description,
             phone_number,
             created_at
         )
         VALUES (
             uuid_generate_v4(),
             :name,
-            :icon_url,
-            :email,
+            :profile_img,
+            :description,
             :phone_number,
             clock_timestamp()
         )
-        RETURNING profiles.id;
+        RETURNING profile.id;
     """)
     values = {
         'name': name,
-        'icon_url': icon_url,
-        'email': email,
+        'profile_img': profile_img,
+        'description': description,
         'phone_number': phone_number
     }
     return await db.execute(query, values)
 
-async def update_profile(profile_id: str, name: str, icon_url: str, email: str, phone_number: str):
+async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str):
     db = main.get_db()
     query = ("""
-        UPDATE profiles
+        UPDATE profile
             SET name = :name,
-                icon_url = :icon_url,
-                email = :email,
+                profile_img = :profile_img,
+                description = :description,
                 phone_number = :phone_number,
                 updated_at = clock_timestamp()
         WHERE
@@ -77,8 +77,8 @@ async def update_profile(profile_id: str, name: str, icon_url: str, email: str, 
     """)
     values = {
         'name': name,
-        'icon_url': icon_url,
-        'email': email,
+        'profile_img': profile_img,
+        'description': description,
         'phone_number': phone_number,
         'profile_id': profile_id
     }
@@ -87,7 +87,7 @@ async def update_profile(profile_id: str, name: str, icon_url: str, email: str, 
 async def delete_profile(profile_id: str):
     db = main.get_db()
     query = ("""
-        UPDATE profiles
+        UPDATE profile
             SET deleted_at = clock_timestamp()
         WHERE 
             id = :profile_id

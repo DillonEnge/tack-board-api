@@ -1,7 +1,7 @@
 from sanic.exceptions import ServerError
-from project.refresh_tokens.model import get_refresh_token, create_refresh_token, update_refresh_token
+from project.refresh_token.model import get_refresh_token, create_refresh_token, update_refresh_token
 
-class RefreshTokens:
+class RefreshToken:
     @staticmethod
     async def get_refresh_token(name: str):
         if not name:
