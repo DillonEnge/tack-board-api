@@ -107,6 +107,62 @@ refresh_token = sqlalchemy.Table(
     sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
 )
 
+user_group_role = sqlalchemy.Table(
+    'user_group_role',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('user_id', UUID(as_uuid=True), ForeignKey('user.id')),
+    sqlalchemy.Column('group_id', UUID(as_uuid=True), ForeignKey('group.id')),
+    sqlalchemy.Column('role', Enum("leader", "admin", "member", name="role_type")),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+
+user_event_role = sqlalchemy.Table(
+    'user_event_role',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('user_id', UUID(as_uuid=True), ForeignKey('user.id')),
+    sqlalchemy.Column('event_id', UUID(as_uuid=True), ForeignKey('event.id')),
+    sqlalchemy.Column('role', Enum("leader", "admin", "member", name="role_type")),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+
+event_group = sqlalchemy.Table(
+    'event_group',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('event_id', UUID(as_uuid=True), ForeignKey('event.id')),
+    sqlalchemy.Column('group_id', UUID(as_uuid=True), ForeignKey('group.id')),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+selection = sqlalchemy.Table(
+    'selection',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('name', sqlalchemy.String(length=100), nullable=False, unique=True),
+    sqlalchemy.Column('poll_id', UUID(as_uuid=True), ForeignKey('poll.id')),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+
+user_selection = sqlalchemy.Table(
+    'user_selection',
+    metadata,
+    sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
+    sqlalchemy.Column('user_id', UUID(as_uuid=True), ForeignKey('user.id')),
+    sqlalchemy.Column('selection_id', UUID(as_uuid=True), ForeignKey('selection.id')),
+    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
+    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+)
+
 def setup_tables():
     metadata.create_all()
 
