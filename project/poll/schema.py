@@ -1,4 +1,5 @@
-from project.poll.model import get_poll, get_polls, create_poll, update_poll, delete_poll
+from project.poll.model import get_poll, get_polls, get_polls_by_event, create_poll, update_poll, delete_poll
+from project.selection.model import get_selections_by_poll
 from sanic.response import json
 from sanic.exceptions import ServerError
 from datetime import datetime
@@ -11,13 +12,18 @@ class Poll:
 
         if not poll:
             raise ServerError('u dun messd up bruther', status_code=500)
+        
+        selections = await get_selections_by_poll(poll_id)
 
         return json({
             'poll': {
                 'id': str(poll['id']),
                 'question': str(poll['question']),
                 'type': str(poll['type']),
-                'scope': str(poll['scope'])
+                'scope': str(poll['scope']),
+                'selections': [{
+                    'name': str(selection['name'])
+                } for selection in selections]
             }
         })
     
@@ -34,6 +40,26 @@ class Poll:
             } for poll in polls] 
         })
 
+    @staticmethod
+    async def get_polls_by_event(event_id: str):
+        polls = await get_polls_by_event(event_id)
+
+        built_polls_arr = []
+        for poll in polls:
+            selections = await get_selections_by_poll(poll['id'])
+            built_polls_arr.append({
+                'id': str(poll['id']),
+                'question': str(poll['question']),
+                'type': str(poll['type']),
+                'scope': str(poll['scope']),
+                'selections': [{
+                    'name': str(selection['name'])
+                } for selection in selections]
+            })
+
+        return json({
+            'polls': built_polls_arr
+        })
 
     @staticmethod
     async def create_poll(question: str, poll_type: str, scope: str, event_id: str):

@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 from project.email.utils import Email
 
+#TODO Create profile_group_role schema methods to get role within group through a profile query by group_id
 class Profile:
     @staticmethod
     async def get_profile(profile_id: str):

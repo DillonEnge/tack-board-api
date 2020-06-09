@@ -29,6 +29,25 @@ async def get_polls():
     """)
     return await db.fetch_all(query)
 
+async def get_polls_by_event(event_id: str):
+    db = main.get_db()
+    query = ("""
+        SELECT
+            id,
+            question,
+            type,
+            scope
+        FROM
+            poll
+        WHERE
+            event_id = :event_id
+            AND deleted_at IS NULL;
+    """)
+    values = {
+        'event_id': event_id
+    }
+    return await db.fetch_all(query, values)
+
 async def create_poll(question: str, poll_type: str, scope: str, event_id: str):
     db = main.get_db()
     query = ("""

@@ -1,4 +1,5 @@
 from project.event.model import get_event, create_event, update_event, delete_event, get_event_tags, add_event_tags, clear_event_tags
+from project.poll.schema import get_polls_by_event
 from sanic.response import json
 from sanic.exceptions import ServerError
 from datetime import datetime

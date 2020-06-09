@@ -3,6 +3,8 @@ from sanic.request import Request
 from sanic.response import json
 from project.event.schema import Event
 from project.tag.schema import Tag
+from project.group.schema import Group
+from project.selection.schema import Selection
 from project.profile.schema import Profile
 from project.user.schema import User
 from project.poll.schema import Poll
@@ -91,6 +93,83 @@ class TagsView(HTTPMethodView):
         deleted_tag_id = await Tag().delete_tag(tag_id)
         return deleted_tag_id
 
+class GroupsView(HTTPMethodView):
+    async def get(self, request: Request):
+        group_id = request.json.get('group_id')
+
+        if not group_id:
+            groups = await Group().get_groups()
+            return groups
+
+        group = await Group().get_group(group_id)
+        return group
+
+    async def post(self, request: Request):
+        validated = validate_request(request)
+
+        name = request.json.get('name')
+        description = request.json.get('description')
+        group_img = request.json.get('group_img')
+        group_id = await Group().create_group(name, description, group_img)
+        return group_id
+
+    async def patch(self, request: Request):
+        validated = validate_request(request)
+
+        group_id = request.json.get('group_id')
+        name = request.json.get('name')
+        description = request.json.get('description')
+        group_img = request.json.get('group_img')
+        group = await Group().update_group(group_id, name, description, group_img)
+        return group
+
+    async def delete(self, request: Request):
+        validated = validate_request(request)
+
+        group_id = request.json.get('group_id')
+        deleted_group_id = await Group().delete_group(group_id)
+        return deleted_group_id
+
+class SelectionsView(HTTPMethodView):
+    async def get(self, request: Request):
+        selection_id = request.json.get('selection_id')
+
+        poll_id = request.json.get('poll_id')
+        if poll_id:
+            selections = await Selection().get_selection_by_poll(poll_id)
+            return selections
+
+        if not selection_id:
+            selections = await Selection().get_selections()
+            return selections
+
+        selection = await Selection().get_selection(selection_id)
+        return selection
+
+    async def post(self, request: Request):
+        validated = validate_request(request)
+
+        name = request.json.get('name')
+        poll_id = request.json.get('poll_id')
+        selection_id = await Selection().create_selection(name, poll_id)
+        return selection_id
+
+    async def patch(self, request: Request):
+        validated = validate_request(request)
+
+        selection_id = request.json.get('selection_id')
+        name = request.json.get('name')
+        poll_id = request.json.get('poll_id')
+        selection = await Selection().update_selection(selection_id, name, poll_id)
+        return selection
+
+    async def delete(self, request: Request):
+        validated = validate_request(request)
+
+        selection_id = request.json.get('selection_id')
+        deleted_selection_id = await Group().delete_selection(selection_id)
+        return deleted_selection_id
+
 
 class ProfilesView(HTTPMethodView):
     async def get(self, request: Request):
@@ -170,6 +249,10 @@ class UsersView(HTTPMethodView):
 class PollsView(HTTPMethodView):
     async def get(self, request: Request):
         poll_id = request.json.get('poll_id')
+        event_id = request.json.get('event_id')
+        if event_id:
+            polls = await Poll().get_polls_by_event(event_id)
+            return polls
 
         if not poll_id:
             polls = await Poll().get_polls()
