@@ -11,7 +11,8 @@ async def get_event(event_id: str):
             name,
             description,
             location,
-            time
+            time,
+            accessibility
         FROM
             event
         WHERE
@@ -23,7 +24,7 @@ async def get_event(event_id: str):
     }
     return await db.fetch_one(query, values)
 
-async def create_event(name: str, description: str, location: str, time: str):
+async def create_event(name: str, description: str, location: str, time: str, accessibility: str):
     db = main.get_db()
     query = ("""
         INSERT INTO event (
@@ -32,6 +33,7 @@ async def create_event(name: str, description: str, location: str, time: str):
             description,
             location,
             time,
+            accessibility,
             created_at
         )
         VALUES (
@@ -40,6 +42,7 @@ async def create_event(name: str, description: str, location: str, time: str):
             :description,
             :location,
             :time,
+            :accessibility,
             clock_timestamp()
         )
         RETURNING event.id;
@@ -48,11 +51,12 @@ async def create_event(name: str, description: str, location: str, time: str):
         'name': name,
         'description': description,
         'location': location,
-        'time': time
+        'time': time,
+        'accessibility': accessibility
     }
     return await db.execute(query, values)
 
-async def update_event(event_id: str, name: str, description: str, location: str, time: str):
+async def update_event(event_id: str, name: str, description: str, location: str, time: str, accessibility: str):
     db = main.get_db()
     query = ("""
         UPDATE event
@@ -60,6 +64,7 @@ async def update_event(event_id: str, name: str, description: str, location: str
                 description = :description,
                 location = :location
                 time = :time,
+                accessibility = :accessibility,
                 updated_at = clock_timestamp()
         WHERE
             id = :event_id
@@ -68,14 +73,16 @@ async def update_event(event_id: str, name: str, description: str, location: str
             id AS event_id,
             name AS event_name,
             description AS event_description,
-            time AS event_time;
+            time AS event_time,
+            accessibility as event_accessibility;
     """)
     values = {
         'name': name,
         'description': description,
         'location': location,
         'time': time,
-        'event_id': event_id,
+        'accessibility': accessibility,
+        'event_id': event_id
     }
     return await db.execute(query, values)
 
@@ -90,6 +97,59 @@ async def delete_event(event_id: str):
     """)
     values = {
         'event_id': event_id
+    }
+    return await db.execute(query, values)
+
+
+async def get_event_groups(event_id: str):
+    db = main.get_db()
+    query = ("""
+        SELECT
+            "group".id,
+            "group".name
+        FROM
+            event_group,
+            "group"
+        WHERE
+            event_group.event_id = :event_id
+            AND event_group.group_id = "group".id;
+    """)
+    values = {
+        'event_id': event_id
+    }
+    return await db.fetch_all(query, values)
+
+async def add_event_groups(event_id: str, groups: List[str]):
+    db = main.get_db()
+    if len(groups) > 0:
+        query = ("""
+            INSERT INTO event_group (id, event_id, group_id)
+            SELECT
+                uuid_generate_v4(),
+                (SELECT id from event
+                    WHERE id = :event_id AND deleted_at IS NULL),
+                id
+            FROM
+                "group"
+            WHERE
+                id = ANY(:groups);
+        """)
+        values = {
+            "event_id": event_id,
+            "groups": groups
+        }
+        return await db.execute(query, values)
+
+async def clear_event_groups(event_id: str):
+    db = main.get_db()
+    query = ("""
+        DELETE FROM
+            event_group
+        WHERE
+            event_id = :event_id;
+    """)
+    values = {
+        "event_id": event_id
     }
     return await db.execute(query, values)
 

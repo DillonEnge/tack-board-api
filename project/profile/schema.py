@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List
 from project.email.utils import Email
 
+#TODO Create profile_group_role schema methods to get role within group through a profile query by group_id
 class Profile:
     @staticmethod
     async def get_profile(profile_id: str):
@@ -38,8 +39,8 @@ class Profile:
         })
 
     @staticmethod
-    async def create_profile(name: str, profile_img: str, description: str, phone_number: str):
-        profile_id = await create_profile(name, profile_img, description, phone_number)
+    async def create_profile(name: str, profile_img: str, description: str, phone_number: str, user_id: str):
+        profile_id = await create_profile(name, profile_img, description, phone_number, user_id)
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
@@ -49,8 +50,8 @@ class Profile:
         })
 
     @staticmethod
-    async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str):
-        profile_id = await update_profile(profile_id, name, profile_img, description, phone_number)
+    async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str, user_id: str):
+        profile_id = await update_profile(profile_id, name, profile_img, description, phone_number, user_id)
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)

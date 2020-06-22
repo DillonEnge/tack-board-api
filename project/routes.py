@@ -9,3 +9,5 @@ def setup_routes(app):
         app.add_route(views.ProfilesView.as_view(), '/profiles')
         app.add_route(views.UsersView.as_view(), '/users')
         app.add_route(views.PollsView.as_view(), '/polls')
+        app.add_route(views.GroupsView.as_view(), '/groups')
+        app.add_route(views.SelectionsView.as_view(), '/selections')

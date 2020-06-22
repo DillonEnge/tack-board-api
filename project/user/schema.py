@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import List
 
 class User:
+    #TODO Modify return as to not expose non-essential data
     @staticmethod
     async def get_user(user_id: str, retrieving_user=False):
         user = await get_user(user_id)
@@ -64,13 +65,13 @@ class User:
         if not user_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        Email().send_message(
-            {
-                'recipient': 'connor.enge@gmail.com',
-                'subject': 'TEST FOR TBA'
-            },
-            'This is a test message for the TBA email server.'
-        )
+        #Email().send_message(
+        #    {
+        #        'recipient': 'connor.enge@gmail.com',
+        #        'subject': 'TEST FOR TBA'
+        #    },
+        #    'This is a test message for the TBA email server.'
+        #)
 
         return json({
             'user_id': str(user_id)
