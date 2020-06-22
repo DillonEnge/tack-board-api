@@ -39,8 +39,8 @@ class Profile:
         })
 
     @staticmethod
-    async def create_profile(name: str, profile_img: str, description: str, phone_number: str):
-        profile_id = await create_profile(name, profile_img, description, phone_number)
+    async def create_profile(name: str, profile_img: str, description: str, phone_number: str, user_id: str):
+        profile_id = await create_profile(name, profile_img, description, phone_number, user_id)
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
@@ -50,8 +50,8 @@ class Profile:
         })
 
     @staticmethod
-    async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str):
-        profile_id = await update_profile(profile_id, name, profile_img, description, phone_number)
+    async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str, user_id: str):
+        profile_id = await update_profile(profile_id, name, profile_img, description, phone_number, user_id)
 
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)

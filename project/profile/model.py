@@ -30,7 +30,7 @@ async def get_profiles():
     """)
     return await db.fetch_all(query)
 
-async def create_profile(name: str, profile_img: str, description: str, phone_number: str):
+async def create_profile(name: str, profile_img: str, description: str, phone_number: str, user_id: str):
     db = main.get_db()
     query = ("""
         INSERT INTO profile (
@@ -39,6 +39,7 @@ async def create_profile(name: str, profile_img: str, description: str, phone_nu
             profile_img,
             description,
             phone_number,
+            user_id,
             created_at
         )
         VALUES (
@@ -47,6 +48,7 @@ async def create_profile(name: str, profile_img: str, description: str, phone_nu
             :profile_img,
             :description,
             :phone_number,
+            :user_id,
             clock_timestamp()
         )
         RETURNING profile.id;
@@ -55,11 +57,12 @@ async def create_profile(name: str, profile_img: str, description: str, phone_nu
         'name': name,
         'profile_img': profile_img,
         'description': description,
-        'phone_number': phone_number
+        'phone_number': phone_number,
+        'user_id': user_id
     }
     return await db.execute(query, values)
 
-async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str):
+async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str, user_id: str):
     db = main.get_db()
     query = ("""
         UPDATE profile
@@ -67,6 +70,7 @@ async def update_profile(profile_id: str, name: str, profile_img: str, descripti
                 profile_img = :profile_img,
                 description = :description,
                 phone_number = :phone_number,
+                user_id = :user_id
                 updated_at = clock_timestamp()
         WHERE
             id = :profile_id
@@ -80,7 +84,8 @@ async def update_profile(profile_id: str, name: str, profile_img: str, descripti
         'profile_img': profile_img,
         'description': description,
         'phone_number': phone_number,
-        'profile_id': profile_id
+        'profile_id': profile_id,
+        'user_id': user_id
     }
     return await db.execute(query, values)
 

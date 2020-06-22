@@ -1,3 +1,4 @@
+from sanic.exceptions import ServerError
 from sanic.views import HTTPMethodView
 from sanic.request import Request
 from sanic.response import json
@@ -36,8 +37,10 @@ class EventsView(HTTPMethodView):
         description = request.json.get('description')
         location = request.json.get('location')
         time = request.json.get('time')
+        accessibility = request.json.get('accessibility')
         tags = request.json.get('tags')
-        event_id = await Event().create_event(name, description, location, time, tags)
+        groups = request.json.get('groups')
+        event_id = await Event().create_event(name, description, location, time, accessibility, tags, groups)
         return event_id
 
     async def patch(self, request: Request):
@@ -47,9 +50,11 @@ class EventsView(HTTPMethodView):
         name = request.json.get('name')
         description = request.json.get('description')
         location = request.json.get('location')
-        tags = request.json.get('tags')
         time = request.json.get('time')
-        event = await Event().update_event(event_id , name, description, time, tags)
+        accessibility = request.json.get('accessibility')
+        tags = request.json.get('tags')
+        groups = request.json.get('groups')
+        event = await Event().update_event(event_id , name, description, time, accessibility, tags, groups)
         return event
 
     async def delete(self, request: Request):
@@ -110,7 +115,11 @@ class GroupsView(HTTPMethodView):
         name = request.json.get('name')
         description = request.json.get('description')
         group_img = request.json.get('group_img')
-        group_id = await Group().create_group(name, description, group_img)
+        accessibility = request.json.get('accessibility')
+        if 'profiles' not in request.json:
+            raise ServerError('u furgot the profiles', status_code=500)
+        profiles = request.json.get('profiles')
+        group_id = await Group().create_group(name, description, group_img, accessibility, profiles)
         return group_id
 
     async def patch(self, request: Request):
@@ -120,7 +129,11 @@ class GroupsView(HTTPMethodView):
         name = request.json.get('name')
         description = request.json.get('description')
         group_img = request.json.get('group_img')
-        group = await Group().update_group(group_id, name, description, group_img)
+        accessibility = request.json.get('accessibility')
+        if 'profiles' not in request.json:
+            raise ServerError('u furgot the profiles', status_code=500)
+        profiles = request.json.get('profiles')
+        group = await Group().update_group(group_id, name, description, group_img, accessibility, profiles)
         return group
 
     async def delete(self, request: Request):
@@ -189,7 +202,8 @@ class ProfilesView(HTTPMethodView):
         profile_img = request.json.get('profile_img')
         description = request.json.get('description')
         phone_number = request.json.get('phone_number')
-        profile_id = await Profile().create_profile(name, profile_img, description, phone_number)
+        user_id = request.json.get('user_id')
+        profile_id = await Profile().create_profile(name, profile_img, description, phone_number, user_id)
         return profile_id
 
     async def patch(self, request: Request):
@@ -200,8 +214,8 @@ class ProfilesView(HTTPMethodView):
         profile_img = request.json.get('profile_img')
         description = request.json.get('description')
         phone_number = request.json.get('phone_number')
-
-        profile = await Profile().update_profile(profile_id , name, profile_img, description, phone_number)
+        user_id = request.json.get('user_id')
+        profile = await Profile().update_profile(profile_id , name, profile_img, description, phone_number, user_id)
         return profile
 
     async def delete(self, request: Request):
