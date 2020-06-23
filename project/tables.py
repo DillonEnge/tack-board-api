@@ -156,10 +156,7 @@ event_group = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('event_id', UUID(as_uuid=True), ForeignKey('event.id'), nullable=False),
-    sqlalchemy.Column('group_id', UUID(as_uuid=True), ForeignKey('group.id'), nullable=False),
-    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
-    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
-    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+    sqlalchemy.Column('group_id', UUID(as_uuid=True), ForeignKey('group.id'), nullable=False)
 )
 selection = sqlalchemy.Table(
     'selection',
@@ -177,10 +174,7 @@ profile_selection = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column('id', UUID(as_uuid=True), primary_key=True),
     sqlalchemy.Column('profile_id', UUID(as_uuid=True), ForeignKey('profile.id'), nullable=False),
-    sqlalchemy.Column('selection_id', UUID(as_uuid=True), ForeignKey('selection.id'), nullable=False),
-    sqlalchemy.Column('created_at', sqlalchemy.DateTime),
-    sqlalchemy.Column('updated_at', sqlalchemy.DateTime, nullable=True),
-    sqlalchemy.Column('deleted_at', sqlalchemy.DateTime, nullable=True)
+    sqlalchemy.Column('selection_id', UUID(as_uuid=True), ForeignKey('selection.id'), nullable=False)
 )
 
 def setup_tables():

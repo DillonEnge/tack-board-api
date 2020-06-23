@@ -12,23 +12,23 @@ class Tag:
         if not tag:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'tag': {
                 'id': str(tag['id']),
                 'name': str(tag['name'])
             }
-        })
+        }
     
     @staticmethod
     async def get_tags():
         tags = await get_tags()
 
-        return json({
+        return {
             'tags': [{
                 'tag_id': str(tag['id']),
                 'tag_name': str(tag['name'])
             } for tag in tags] 
-        })
+        }
 
 
     @staticmethod
@@ -38,9 +38,9 @@ class Tag:
         if not tag_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'tag_id': str(tag_id)
-        })
+        }
 
     @staticmethod
     async def update_tag(tag_id: str, name: str):
@@ -49,9 +49,9 @@ class Tag:
         if not tag_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'tag_id': str(tag_id)
-        })
+        }
 
     @staticmethod
     async def delete_tag(tag_id: str):
@@ -60,6 +60,6 @@ class Tag:
         if not deleted_tag_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'tag_id': str(deleted_tag_id)
-        })
+        }

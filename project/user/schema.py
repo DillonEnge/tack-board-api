@@ -22,14 +22,14 @@ class User:
                 'email': str(user['email'])
             }
 
-        return json({
+        return {
             'user': {
                 'id': str(user['id']),
                 'username': str(user['username']),
                 'password': str(user['password']),
                 'email': str(user['email'])
             }
-        })
+        }
 
     @staticmethod
     async def get_user_by_name(username: str):
@@ -49,14 +49,14 @@ class User:
     async def get_users():
         users = await get_users()
 
-        return json({
+        return {
             'users': [{
                 'id': str(user['id']),
                 'username': str(user['username']),
                 'password': str(user['password']),
                 'email': str(user['email'])
             } for user in users]
-        })
+        }
 
     @staticmethod
     async def create_user(username: str, password: str, email: str):
@@ -73,9 +73,9 @@ class User:
         #    'This is a test message for the TBA email server.'
         #)
 
-        return json({
+        return {
             'user_id': str(user_id)
-        })
+        }
 
     @staticmethod
     async def update_user(user_id: str, username: str, password: str, email: str):
@@ -84,9 +84,9 @@ class User:
         if not user_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'user_id': str(user_id)
-        })
+        }
 
     @staticmethod
     async def delete_user(user_id: str):
@@ -95,6 +95,6 @@ class User:
         if not deleted_user_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'user_id': str(deleted_user_id)
-        })
+        }

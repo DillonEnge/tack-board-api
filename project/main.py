@@ -44,7 +44,6 @@ def init():
     app.config.from_object(Settings)
 
     setup_database()
-    setup_tables()
     setup_routes(app)
     setup_middlewares(app)
 
