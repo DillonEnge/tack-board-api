@@ -129,7 +129,7 @@ async def add_group_profile(group_id: str, profile_id: str, role: str):
         FROM
             profile
         WHERE
-            id = :profile_id
+            id = :profile_id;
     """)
     values = {
         "group_id": group_id,

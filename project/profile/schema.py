@@ -14,7 +14,7 @@ class Profile:
         if not profile:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'profile': {
                 'id': str(profile['id']),
                 'name': str(profile['name']),
@@ -22,13 +22,13 @@ class Profile:
                 'description': str(profile['description']),
                 'phone_number': str(profile['phone_number'])
             }
-        })
+        }
 
     @staticmethod
     async def get_profiles():
         profiles = await get_profiles()
 
-        return json({
+        return {
             'profiles': [{
                 'id': str(profile['id']),
                 'name': str(profile['name']),
@@ -36,7 +36,7 @@ class Profile:
                 'description': str(profile['description']),
                 'phone_number': str(profile['phone_number'])
             } for profile in profiles]
-        })
+        }
 
     @staticmethod
     async def create_profile(name: str, profile_img: str, description: str, phone_number: str, user_id: str):
@@ -45,9 +45,9 @@ class Profile:
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
         
-        return json({
+        return {
             'profile_id': str(profile_id)
-        })
+        }
 
     @staticmethod
     async def update_profile(profile_id: str, name: str, profile_img: str, description: str, phone_number: str, user_id: str):
@@ -56,9 +56,9 @@ class Profile:
         if not profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'profile_id': str(profile_id)
-        })
+        }
 
     @staticmethod
     async def delete_profile(profile_id: str):
@@ -67,6 +67,6 @@ class Profile:
         if not deleted_profile_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'profile_id': str(deleted_profile_id)
-        })
+        }

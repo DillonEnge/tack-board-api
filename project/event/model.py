@@ -105,8 +105,7 @@ async def get_event_groups(event_id: str):
     db = main.get_db()
     query = ("""
         SELECT
-            "group".id,
-            "group".name
+            "group".id
         FROM
             event_group,
             "group"
@@ -197,6 +196,62 @@ async def clear_event_tags(event_id: str):
     query = ("""
         DELETE FROM
             event_tag
+        WHERE
+            event_id = :event_id;
+    """)
+    values = {
+        "event_id": event_id
+    }
+    return await db.execute(query, values)
+
+async def get_event_profiles(event_id: str):
+    db = main.get_db()
+    query = ("""
+        SELECT
+            profile.id,
+            profile.name,
+            profile.profile_img,
+            profile.phone_number,
+            profile.description,
+            profile_event_role.role
+        FROM
+            profile_event_role,
+            profile
+        WHERE
+            profile_event_role.event_id = :event_id
+            AND profile_event_role.profile_id = profile.id;
+    """)
+    values = {
+        'event_id': event_id
+    }
+    return await db.fetch_all(query, values)
+
+async def add_event_profile(event_id: str, profile_id: str, role: str):
+    db = main.get_db()
+    query = ("""
+        INSERT INTO profile_event_role (id, event_id, profile_id, role)
+        SELECT
+            uuid_generate_v4(),
+            :event_id,
+            profile.id,
+            :role
+        FROM
+            profile
+        WHERE
+            id = :profile_id;
+    """)
+    values = {
+        "event_id": event_id,
+        "profile_id": profile_id,
+        "role": role
+    }
+    return await db.execute(query, values)
+
+async def clear_event_profiles(event_id: str):
+    db = main.get_db()
+    query = ("""
+        DELETE FROM
+            profile_event_role
         WHERE
             event_id = :event_id;
     """)

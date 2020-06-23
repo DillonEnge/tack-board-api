@@ -14,7 +14,7 @@ class Group:
         if not group:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'group': {
                 'id': str(group['id']),
                 'name': str(group['name']),
@@ -23,13 +23,13 @@ class Group:
                 'accessibility': str(group['accessibility']),
                 'profiles': [build_group_profile(profile) for profile in group_profiles]
             }
-        })
+        }
     
     @staticmethod
     async def get_groups():
         groups = await get_groups()
 
-        return json({
+        return {
             'groups': [{
                 'group_id': str(group['id']),
                 'group_name': str(group['name']),
@@ -37,7 +37,7 @@ class Group:
                 'group_img': str(group['group_img']),
                 'group_accessibility': str(group['accessibility'])
             } for group in groups] 
-        })
+        }
 
 
     @staticmethod
@@ -49,9 +49,9 @@ class Group:
         if not group_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'group_id': str(group_id)
-        })
+        }
 
     @staticmethod
     async def update_group(group_id: str, name: str, description: str, group_img: str, accessibility: str, profiles: List[Dict[str, str]]):
@@ -65,10 +65,10 @@ class Group:
         if not group_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'group_id': str(group_id),
             'profiles': [build_group_profile(profile) for profile in group_profiles]
-        })
+        }
 
     @staticmethod
     async def delete_group(group_id: str):
@@ -77,16 +77,18 @@ class Group:
         if not deleted_group_id:
             raise ServerError('u dun messd up bruther', status_code=500)
 
-        return json({
+        return {
             'group_id': str(deleted_group_id)
-        })
+        }
 
 def build_group_profile(profile):
     return {
-        "profile_id": str(profile['id']),
-        "profile_name": str(profile['name']),
-        "profile_img": str(profile['profile_img']),
-        "profile_phone_number": str(profile['phone_number']),
-        "profile_description": str(profile['description']),
-        "profile_role": str(profile['role'])
+        "profile": {
+            "id": str(profile['id']),
+            "name": str(profile['name']),
+            "profile_img": str(profile['profile_img']),
+            "phone_number": str(profile['phone_number']),
+            "description": str(profile['description']),
+            "role": str(profile['role'])
+        }
     }
