@@ -73,15 +73,15 @@ async def update_selection(selection_id: str, name: str, poll_id: str):
     query = ("""
         UPDATE selection
             SET name = :name,
-                poll_id = :poll_id
+                poll_id = :poll_id,
                 updated_at = clock_timestamp()
         WHERE
             id = :selection_id
             AND deleted_at IS NULL
         RETURNING
             id AS selection_id,
-            name AS selection_name;
-            poll_id AS poll_id
+            name AS selection_name,
+            poll_id AS poll_id;
     """)
     values = {
         'name': name,
@@ -101,5 +101,54 @@ async def delete_selection(selection_id: str):
     """)
     values = {
         'selection_id': selection_id
+    }
+    return await db.execute(query, values)
+
+async def get_selection_profiles(selection_id: str):
+    db = main.get_db()
+    query = ("""
+        SELECT
+            profile.id
+        FROM
+            profile_selection,
+            profile
+        WHERE
+            profile_selection.selection_id = :selection_id
+            AND profile_selection.profile_id = profile.id;
+    """)
+    values = {
+        'selection_id': selection_id
+    }
+    return await db.fetch_all(query, values)
+
+async def add_selection_profiles(selection_id: str, profiles: str):
+    db = main.get_db()
+    query = ("""
+        INSERT INTO profile_selection (id, selection_id, profile_id)
+        SELECT
+            uuid_generate_v4(),
+            :selection_id,
+            profile.id
+        FROM
+            profile
+        WHERE
+            id = ANY(:profiles);
+    """)
+    values = {
+        "selection_id": selection_id,
+        "profiles": profiles
+    }
+    return await db.execute(query, values)
+
+async def clear_selection_profiles(selection_id: str):
+    db = main.get_db()
+    query = ("""
+        DELETE FROM
+            profile_selection
+        WHERE
+            selection_id = :selection_id;
+    """)
+    values = {
+        "selection_id": selection_id
     }
     return await db.execute(query, values)
