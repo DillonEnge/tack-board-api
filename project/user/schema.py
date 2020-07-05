@@ -18,16 +18,12 @@ class User:
             return {
                 'user_id': str(user['id']),
                 'username': str(user['username']),
-                'password': str(user['password']),
-                'email': str(user['email'])
             }
 
         return {
             'user': {
                 'id': str(user['id']),
                 'username': str(user['username']),
-                'password': str(user['password']),
-                'email': str(user['email'])
             }
         }
 
@@ -41,8 +37,6 @@ class User:
         return {
             'user_id': str(user['id']), # Important key for use with sanic_jwt
             'username': str(user['username']),
-            'password': str(user['password']),
-            'email': str(user['email'])
         }
 
     @staticmethod
@@ -53,8 +47,6 @@ class User:
             'users': [{
                 'id': str(user['id']),
                 'username': str(user['username']),
-                'password': str(user['password']),
-                'email': str(user['email'])
             } for user in users]
         }
 
