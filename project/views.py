@@ -175,7 +175,8 @@ class SelectionsView(HTTPMethodView):
         selection_id = request.json.get('selection_id')
         name = request.json.get('name')
         poll_id = request.json.get('poll_id')
-        selection = await Selection().update_selection(selection_id, name, poll_id)
+        profiles = request.json.get('profiles')
+        selection = await Selection().update_selection(selection_id, name, poll_id, profiles)
         return json(selection)
 
     async def delete(self, request: Request):
