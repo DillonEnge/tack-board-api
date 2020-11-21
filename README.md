@@ -2,12 +2,14 @@
 
 ## Setup:
 
-    $ pip install
-    
-    $ pip install -e .
+    $ pip install -r requirements.txt
 
-    $ python -m project
+    $ cd fast_api
+
+    $ uvicorn app.main:app --reload
 
 ## Todo:
-* Create profile_group_role schema methods to get role within group through a profile query by group_id ('./project/profile/schema.py', L8)
-* Modify return as to not expose non-essential data ('./project/user/schema.py', L9)
+* Enforce accessibility enum on the db side ('./fast_api/app/events/models.py', L6)
+* Add URL switch between sqlite and psql for different environments ('./fast_api/app/db/database.py', L5)
+* Add sqlite/psql switch for uuid usage ('./fast_api/app/tags/models.py', L8)
+* Enforce enums on the db side ('./fast_api/app/polls/models.py', L5)
